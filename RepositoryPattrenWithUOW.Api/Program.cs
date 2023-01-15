@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RepositoryPattrenWithUOW.Core.Interfaces;
+using RepositoryPattrenWithUOW.Core;
 using RepositoryPattrenWithUOW.EF;
 using RepositoryPattrenWithUOW.EF.Repositories;
 
@@ -11,7 +11,10 @@ builder.Services.AddControllers();
 var ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(ConnectionString, b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName)));
-builder.Services.AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+
+
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+//builder.Services.AddTransient(typeof(IBaseRepository<>), typeof(BaseRepository<>));
 
 
 builder.Services.AddEndpointsApiExplorer();

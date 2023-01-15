@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RepositoryPattrenWithUOW.Core;
 using RepositoryPattrenWithUOW.Core.Consts;
-using RepositoryPattrenWithUOW.Core.Interfaces;
 using RepositoryPattrenWithUOW.Core.Models;
 
 namespace RepositoryPattrenWithUOW.Api.Controllers
@@ -10,52 +10,68 @@ namespace RepositoryPattrenWithUOW.Api.Controllers
     [ApiController]
     public class BooksController : ControllerBase
     {
-        private readonly IBaseRepository<Book> _booksRepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public BooksController(IBaseRepository<Book> booksRepo)
+        public BooksController(IUnitOfWork unitOfWork)
         {
-            _booksRepo = booksRepo;
+            _unitOfWork = unitOfWork;
         }
+
         [HttpGet]
         public IActionResult GetById()
         {
-            var book = _booksRepo.GetById(1);
+            var book = _unitOfWork.Books.GetById(1);
             return Ok(book);
         }
 
         [HttpGet("FindByName")]
         public IActionResult FindByName()
         {
-            var book = _booksRepo.FilterBy(aa => aa.Title == "Book 1");
+            var book = _unitOfWork.Books.FilterBy(aa => aa.Title == "Book 1");
             return Ok(book);
         }
 
         [HttpGet("GetAllBooks")]
         public IActionResult GetAllBooks()
         {
-            var books = _booksRepo.GetAll();
+            var books = _unitOfWork.Books.GetAll();
             return Ok(books);
         }
 
         [HttpGet("GetAllBooksWithAuthors")]
         public IActionResult GetAllBooksWithAuthors()
         {
-            var book = _booksRepo.Find(a => a.Title.Contains("Book"), new[] { "Author" });
+            var book = _unitOfWork.Books.Find(a => a.Title.Contains("Book"), new[] { "Author" });
             return Ok(book);
         }
 
         [HttpGet("GetOrderd")]
         public IActionResult GetOrderd()
         {
-            var books = _booksRepo.Find(a => a.Title.Contains("Book"), null, null, a => a.Id, OrderBy.Descending);
+            var books = _unitOfWork.Books.Find(a => a.Title.Contains("Book"), null, null, a => a.Id, OrderBy.Descending);
             return Ok(books);
         }
 
         [HttpPost("AddOne")]
         public IActionResult AddOne()
         {
-            var book = _booksRepo.Add(new Book { Title = "Book 3", AuthorId = 1 });
+            var book = _unitOfWork.Books.Add(new Book { Title = "Book 4", AuthorId = 1 });
+            _unitOfWork.Complete();
             return Ok(book);
+        }
+
+        [HttpPost("AddRange")]
+        public IActionResult AddRange()
+        {
+            var books = _unitOfWork.Books.AddRange(new Book[]
+            {
+                new Book { Title = "Book 3", AuthorId = 1 },
+                new Book { Title = "Book 4", AuthorId = 1}
+            });
+            _unitOfWork.Complete();
+
+            //var books_test = _unitOfWork.Books.GetSpecialBooks();
+            return Ok(books);
         }
 
 

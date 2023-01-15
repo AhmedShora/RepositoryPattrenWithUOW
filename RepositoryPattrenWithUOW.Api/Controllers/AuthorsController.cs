@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using RepositoryPattrenWithUOW.Core.Interfaces;
+using RepositoryPattrenWithUOW.Core;
 using RepositoryPattrenWithUOW.Core.Models;
 
 namespace RepositoryPattrenWithUOW.Api.Controllers
@@ -9,23 +9,23 @@ namespace RepositoryPattrenWithUOW.Api.Controllers
     [ApiController]
     public class AuthorsController : ControllerBase
     {
-        private readonly IBaseRepository<Author> _authorsRepo;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public AuthorsController(IBaseRepository<Author> authorsRepo)
+        public AuthorsController(IUnitOfWork unitOfWork)
         {
-            _authorsRepo = authorsRepo;
+            _unitOfWork = unitOfWork;
         }
         [HttpGet]
         public IActionResult GetById()
         {
-            var author = _authorsRepo.GetById(1);
+            var author = _unitOfWork.Authors.GetById(1);
             return Ok(author);
         }
 
         [HttpGet("GetByIdAsync")]
         public async Task<IActionResult> GetByIdAsync()
         {
-            var author = await _authorsRepo.GetByIdAsync(1);
+            var author = await _unitOfWork.Authors.GetByIdAsync(1);
             return Ok(author);
         }
 

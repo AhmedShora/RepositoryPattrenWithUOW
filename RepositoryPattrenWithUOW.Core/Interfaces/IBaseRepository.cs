@@ -15,15 +15,22 @@ namespace RepositoryPattrenWithUOW.Core.Interfaces
         Task<T> GetByIdAsync(int id);
 
         IEnumerable<T> GetAll();
-        T FilterBy(Expression<Func<T, bool>> match);
+        T FilterBy(Expression<Func<T, bool>> criteria);
 
-        IEnumerable<T> Find(Expression<Func<T, bool>> match, string[]? includes = null);
-        IEnumerable<T> Find(Expression<Func<T, bool>> match, int take, int skip);
-        IEnumerable<T> Find(Expression<Func<T, bool>> match, int? take, int? skip,
+        IEnumerable<T> Find(Expression<Func<T, bool>> criteria, string[]? includes = null);
+        IEnumerable<T> Find(Expression<Func<T, bool>> criteria, int take, int skip);
+        IEnumerable<T> Find(Expression<Func<T, bool>> criteria, int? take, int? skip,
             Expression<Func<T, object>>? orderBy = null, string orderByDirection = OrderBy.Ascending);
 
         T Add(T entity);
         IEnumerable<T> AddRange(IEnumerable<T> entities);
+
+        T Update(T entity);
+        void Delete(T entity);
+        void Attach(T entity);
+        int Count();
+        int Count(Expression<Func<T, bool>> expression);
+
 
     }
 }
